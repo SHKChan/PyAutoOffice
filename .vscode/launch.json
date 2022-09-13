@@ -1,0 +1,27 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "My Python Configuration",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\src\\${workspaceFolderBasename}.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+
+                // "${workspaceFolder}", // vscode中打开文件夹的路径,'E:\\Code\\GitHub\\CS50'
+                // "${workspaceFolderBasename}", // vscode中打开文件夹的路径(不包含"/"),'CS50'
+                // "${file}", // 当前打开的文件(即当前打开文件的绝对路径),'e:\\Code\\GitHub\\CS50\\Week06\\world-cup\\tournament.py'
+                // "${relativeFile}", // 当前打开的文件路径,相对于workspaceFolder \,'Week06\\world-cup\\tournament.py'
+                // "${fileBasename}", // 当前打开的文件的文件名,'tournament.py'
+                // "${fileDirname}", // 当前打开的文件的目录名,'e:\\Code\\GitHub\\CS50\\Week06\\world-cup'
+                // "${fileExtname}", // 当前打开的文件的拓展名,'.py'
+                // "${cwd}", // 任务管理器启动时的当前工作目录,'E:\\Code\\GitHub\\CS50'
+            ]
+        }
+    ]
+}
