@@ -4,13 +4,28 @@ import win32file
 import openpyxl
 import pdfplumber
 
-
-from mylogger import LOGGER
+from MyLogger import LOGGER
 
 
 class Pdf2Xl(threading.Thread):
-    __slots__ = ('pdf_list', 'xl_path', 'sheet_name',
-                 'data', 'exit_code', 'progress')
+    """_summary_
+
+    Args:
+        pdf_files(): all input pdf files path
+        xl_file(): excel file path for output data
+        datas(): output datas for excel
+        exit_code(): exit status for convertion, initial with 'None', 0 for success, other value for fail
+        progress() :convertion progress with maximum value=100
+
+    Raises:
+        self.exit_code: _description_
+        Exception: _description_
+
+    Returns:
+        _type_: _description_
+    """
+    __slots__ = ('pdf_files', 'xl_file', 'datas',
+                 'exit_code', 'progress')
 
     title_xl = {'Date': 0, 'Customer': 1, 'PO#1': 2, 'Type': 3, 'PO#2': 4,
                 'Description': 5, 'Qty': 6, 'Unit Price': 7, 'Total': 8, 'Customer req. ETD': 9}
@@ -20,11 +35,10 @@ class Pdf2Xl(threading.Thread):
 
     title_pdf = ['Item', 'Description', 'Qty', None, 'Rate', 'Amount']
 
-    def __init__(self, pdf_list: str, xl_path: str, sheet_name: str = '') -> None:
-        self.pdf_list = pdf_list
-        self.xl_path = xl_path
-        self.sheet_name = sheet_name
-        self.data = list()
+    def __init__(self, pdf_files: str, xl_file: str) -> None:
+        self.pdf_files = pdf_files
+        self.xl_file = xl_file
+        self.datas = list()
         self.exit_code = None
         self.progress = 0   # Max value: 100%
         # 创建多线程 设置以保护模式启动，即主线程运行结束，子线程也停止运行
@@ -49,7 +63,7 @@ class Pdf2Xl(threading.Thread):
             raise self.exit_code
 
     def convert(self) -> None:
-        if not self.is_file_used(self.xl_path, win32file.GENERIC_WRITE):
+        if not self.is_file_used(self.xl_file, win32file.GENERIC_WRITE):
             self.rd_from_pdf()  # account for 90% in progress
             self.wt_to_xl()  # account for 10% in progress
             self.exit_code = 0
@@ -57,16 +71,15 @@ class Pdf2Xl(threading.Thread):
             self.exit_code = 1
             raise Exception('Excel file is opened!')
 
-    def rd_from_pdf(self) -> None:
+    def rd_from_pdf(self, mode='') -> None:
         total_last = 0
-        len_pdfs = len(self.pdf_list)
-        for pdf in self.pdf_list:
+        len_pdfs = len(self.pdf_files)
+        for pdf in self.pdf_files:
             with pdfplumber.open(pdf) as f:
                 # 提取PDF中的一页
                 for page in f.pages:
                     Date = ''
                     PONo = ''
-                    im = page.to_image(resolution=150)
                     # 在页面内,逐表格筛选数据
                     for table in page.extract_tables():
                         # 先找到标题栏标识Date和'P.O. No.'
@@ -79,23 +92,20 @@ class Pdf2Xl(threading.Thread):
                             self.format_data(table)
 
                     # 补填Date和P.O No.
-                    len_data = len(self.data)
-                    for i in range(total_last, len_data):
-                        self.data[i][self.title_xl['Date']] = Date
-                        self.data[i][self.title_xl['PO#1']] = PONo
-                        self.data[i][self.title_xl['PO#2']] = PONo
-                    total_last = len_data
+                    len_datas = len(self.datas)
+                    for i in range(total_last, len_datas):
+                        self.datas[i][self.title_xl['Date']] = Date
+                        self.datas[i][self.title_xl['PO#1']] = PONo
+                        self.datas[i][self.title_xl['PO#2']] = PONo
+                    total_last = len_datas
 
             self.progress += 1/len_pdfs*50
 
     def wt_to_xl(self) -> None:
         # 打开指定路径的Excel文件
-        wb = openpyxl.load_workbook(self.xl_path)
+        wb = openpyxl.load_workbook(self.xl_file)
         ws_names = wb.get_sheet_names()
-        if self.sheet_name == '':
-            ws = wb.get_sheet_by_name(ws_names[0])
-        else:
-            ws = wb.get_sheet_by_name(self.sheet_name)
+        ws = wb.get_sheet_by_name(ws_names[0])
 
         # 找第一个空行
         for row in range(1, ws.max_row+2):
@@ -105,14 +115,14 @@ class Pdf2Xl(threading.Thread):
                     break
 
         # 将数据写进sheet表单中的第一个空行
-        len_data = len(self.data)
-        for row in range(len_data):
+        len_datas = len(self.datas)
+        for row in range(len_datas):
             for col in range(10):
-                ws.cell(row+first_row2wt, col+1).value = self.data[row][col]
-            self.progress += 1/len_data*50
+                ws.cell(row+first_row2wt, col+1).value = self.datas[row][col]
+            self.progress += 1/len_datas*50
 
          # 保存文件
-        wb.save(self.xl_path)
+        wb.save(self.xl_file)
         wb.close()
 
     def format_data(self, table: list) -> None:
@@ -126,9 +136,9 @@ class Pdf2Xl(threading.Thread):
                 if col[2] != '' and col[2] != None:
                     len_col = len(col)
                     # 已经找到标题栏标识Item,在二维矩阵中新增一行
-                    self.data.append([])
+                    self.datas.append([])
                     for n in range(self.table_width):
-                        self.data[-1].append('')
+                        self.datas[-1].append('')
 
                     # 记录数据项
                     for j in range(len_col):
@@ -138,10 +148,10 @@ class Pdf2Xl(threading.Thread):
                         if col[j] == 'Parts':
                             col[j] = 'Part'
                         index = self.mapping_pdf2xl[self.title_pdf[j]]
-                        self.data[-1][index] = col[j]
+                        self.datas[-1][index] = col[j]
                     # 找出当前item所占的行数(即知道下一item出现为止)
                     index = self.mapping_pdf2xl['Description']
-                    description = [self.data[-1][index]]
+                    description = [self.datas[-1][index]]
                     for k in range(i+1, len_table):
                         col_temp = table[k]
                         if (col_temp[0] == ''):
@@ -149,7 +159,7 @@ class Pdf2Xl(threading.Thread):
                             description.append(col_temp[1])
                         else:
                             # 直接跳跃至下一item的对应行
-                            self.data[-1][index] = '\n'.join(description)
+                            self.datas[-1][index] = '\n'.join(description)
                             i = k
                             break
                 else:
@@ -158,7 +168,7 @@ class Pdf2Xl(threading.Thread):
     def is_file_used(self, file: str, type: int) -> bool:
         # xl文件是否可写
         try:
-            vHandle = win32file.CreateFile(self.xl_path,    # 文件名
+            vHandle = win32file.CreateFile(file,    # 文件名
 
                                            type,  # 访问对象的类型。应用程序可以获得读访问、写访问、读写访问或设备查询访问
 
