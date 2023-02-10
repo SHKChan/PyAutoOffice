@@ -1,0 +1,79 @@
+Order Date: 2/1/2023 PENDING PO No.: 114125
+Due Date to MCT: 2/22/2023 Requested By: Mike Berry
+Ordered By: Nicole Benner
+VENDOR Vendor Quote #: 59751-4 SHIP TO
+FATHOM PRECISION INTERNATIONAL LIMITED
+2ND FLOOR BUILDING B
+HONGYAN TECHNOLOGY PARK
+LIHENG ROAD, TANGWEI, SHIPAI
+CHINA
+Line # Item No. /  Description Qty Rcvd. Unit Price Discount Price
+1 0003638 / CNC, Delrin 150 (Black) 1,080 $2.15000 $0.00 $2,322.00
+2 0003639 / CNC, Delrin 150 (Black) 1,080 $2.15000 $0.00 $2,322.00
+3 0003641 / CNC, Delrin 150 (Black) 680 $2.55000 $0.00 $1,734.00
+4 0003642 / CNC, Delrin 150 (Black) 680 $2.70000 $0.00 $1,836.00
+5 0003643 / CNC, Delrin 150 (Black) 440 $2.70000 $0.00 $1,188.00
+6 0003644 / CNC, Delrin 150 (Black) 440 $4.85000 $0.00 $2,134.00
+7 0003645 / CNC, Delrin 150 (Black) 320 $1.62000 $0.00 $518.40
+8 0003646 / CNC, Delrin 150 (Black) 320 $1.35000 $0.00 $432.00
+9 0003663 / CNC, Delrin 150 (Black) 1,200 $1.62000 $0.00 $1,944.00
+10 0005567 / CNC, ABS, Exterior painted white RAL 9003 20 $59.69000 $0.00 $1,193.80
+11 0006758 / CNC, ABS, Exterior painted white RAL 9003 (light  20 $248.72000 $0.00 $4,974.40
+texture)
+12 0006759 / CNC, ABS, Exterior painted white RAL 9003 (light  20 $248.72000 $0.00 $4,974.40
+texture)
+13 0007198 / CNC, ABS UL94 V-0 20 $49.58000 $0.00 $991.60
+14 0007199 / CNC, ABS 20 $1,027.13000 $0.00 $20,542.60
+15 0007200 / CNC, ABS 20 $212.54000 $0.00 $4,250.80
+16 0007209 / CNC, ABS 20 $63.76000 $0.00 $1,275.20
+17 0007210 / CNC, ABS 20 $63.76000 $0.00 $1,275.20
+18 PRO-101 (Update to PRO-157) / CNC, ABS UL94 V-0, Paint  20 $498.48000 $0.00 $9,969.60
+white RAL-9003 (Light Texture), EMI Coating on inner surface
+19 PRO-102 (Update to PRO-159) / CNC, ABS UL94 V-0, Paint  20 $2,347.87000 $0.00 $46,957.40
+white RAL-9003 (Light Texture), EMI Coating on inner surface
+20 PRO-103 (Update to PRO-158) / CNC, ABS UL94 V-0, Paint  20 $498.48000 $0.00 $9,969.60
+white RAL-9003 (Light Texture), EMI Coating on inner surface
+21 PRO-104 (Update to PRO-160) / CNC, ABS UL94 V-0, Paint  20 $177.09000 $0.00 $3,541.80
+white RAL-9003 (Light Texture), NO EMI
+Midwest Composite Technologies, LLC dba Fathom reserves the right to reject or return any product or service that does 
+not conform to specification or agreed upon terms. Supplier performance will be monitored to purchase order 
+Page 1 of 4 www.FathomMfg.comOrder Date: 2/1/2023 PENDING PO No.: 114125
+Due Date to MCT: 2/22/2023 Requested By: Mike Berry
+Ordered By: Nicole Benner
+VENDOR Vendor Quote #: 59751-4 SHIP TO
+FATHOM PRECISION INTERNATIONAL LIMITED
+2ND FLOOR BUILDING B
+HONGYAN TECHNOLOGY PARK
+LIHENG ROAD, TANGWEI, SHIPAI
+CHINA
+Line # Item No. /  Description Qty Rcvd. Unit Price Discount Price
+1 0003638 / CNC, Delrin 150 (Black) 1,080 $2.15000 $0.00 $2,322.00
+2 0003639 / CNC, Delrin 150 (Black) 1,080 $2.15000 $0.00 $2,322.00
+3 0003641 / CNC, Delrin 150 (Black) 680 $2.55000 $0.00 $1,734.00
+4 0003642 / CNC, Delrin 150 (Black) 680 $2.70000 $0.00 $1,836.00
+5 0003643 / CNC, Delrin 150 (Black) 440 $2.70000 $0.00 $1,188.00
+6 0003644 / CNC, Delrin 150 (Black) 440 $4.85000 $0.00 $2,134.00
+7 0003645 / CNC, Delrin 150 (Black) 320 $1.62000 $0.00 $518.40
+8 0003646 / CNC, Delrin 150 (Black) 320 $1.35000 $0.00 $432.00
+9 0003663 / CNC, Delrin 150 (Black) 1,200 $1.62000 $0.00 $1,944.00
+10 0005567 / CNC, ABS, Exterior painted white RAL 9003 20 $59.69000 $0.00 $1,193.80
+11 0006758 / CNC, ABS, Exterior painted white RAL 9003 (light  20 $248.72000 $0.00 $4,974.40
+texture)
+12 0006759 / CNC, ABS, Exterior painted white RAL 9003 (light  20 $248.72000 $0.00 $4,974.40
+texture)
+13 0007198 / CNC, ABS UL94 V-0 20 $49.58000 $0.00 $991.60
+14 0007199 / CNC, ABS 20 $1,027.13000 $0.00 $20,542.60
+15 0007200 / CNC, ABS 20 $212.54000 $0.00 $4,250.80
+16 0007209 / CNC, ABS 20 $63.76000 $0.00 $1,275.20
+17 0007210 / CNC, ABS 20 $63.76000 $0.00 $1,275.20
+18 PRO-101 (Update to PRO-157) / CNC, ABS UL94 V-0, Paint  20 $498.48000 $0.00 $9,969.60
+white RAL-9003 (Light Texture), EMI Coating on inner surface
+19 PRO-102 (Update to PRO-159) / CNC, ABS UL94 V-0, Paint  20 $2,347.87000 $0.00 $46,957.40
+white RAL-9003 (Light Texture), EMI Coating on inner surface
+20 PRO-103 (Update to PRO-158) / CNC, ABS UL94 V-0, Paint  20 $498.48000 $0.00 $9,969.60
+white RAL-9003 (Light Texture), EMI Coating on inner surface
+21 PRO-104 (Update to PRO-160) / CNC, ABS UL94 V-0, Paint  20 $177.09000 $0.00 $3,541.80
+white RAL-9003 (Light Texture), NO EMI
+Midwest Composite Technologies, LLC dba Fathom reserves the right to reject or return any product or service that does 
+not conform to specification or agreed upon terms. Supplier performance will be monitored to purchase order 
+Page 1 of 4 www.FathomMfg.com

@@ -2,9 +2,7 @@
 # -*- coding:utf-8 -*-
 # author:SHK C.
 
-from faulthandler import disable
 import os
-from tkinter import Button
 
 import cv2
 import numpy as np
@@ -15,8 +13,9 @@ from PdfViewer import PdfViewer
 LWIDTH = 32
 BUTTON_MAPPING = {'-PDF-': '-FOLDER_PDF-', '-EXCEL-': '-FILE_EXCEL-'}
 INCON_SIZE = 7
-VERSION = ['V1.0.2', 'V1.0.1', 'V.1.0.0']
+VERSION = ['V1.0.3', 'V1.0.2', 'V1.0.1', 'V.1.0.0']
 UPDATE_NOTE = [
+    ['Added: Support PDF format for Midwest Composite Technologies, LLC dba Fathom\n'],
     ['Others: Data structure optimize',
      'Fixed: Raise error when excel file is occupied',
      'Added: 1. Tips for each button\n\
@@ -38,6 +37,7 @@ def main():
     # Create an empty image in bytes
     img_mat = np.ones((792, 512, 3), np.uint8)*255
     img_bytes = mat2bytes(img_mat)
+    format = 0
 
     while True:
         event, values = window.read(50)
@@ -63,7 +63,7 @@ def main():
                 for pdf in values['-PDF_LIST-']:
                     pdf_files.append(values['-INPUT_PDF-'] + "/" + pdf)
 
-                convertor = Pdf2Xl(pdf_files, values['-INPUT_EXCEL-'])
+                convertor = Pdf2Xl(pdf_files, values['-INPUT_EXCEL-'], format)
                 convertor.start()
                 while True:
                     # convertor.convert()
@@ -72,7 +72,7 @@ def main():
                             'Info', 'Convert PDF data into Excel successfully!')
                         break
                     elif convertor.exit_code is not None:
-                        sg.popup('Error', 'Can not access pdf or excel file!')
+                        sg.popup('Error', 'Converting error!')
                         break
                     # 更新进度条
                     window['-PROGRESS_BAR-'].update(
@@ -113,6 +113,20 @@ def main():
             window['-PAGE-'].update(data=img_bytes)
             renew_page = False
 
+        if event in ('-FORMAT-1-', '-FORMAT-2-'):
+            if '-FORMAT-1-' == event:
+                format = 0
+                window['-FORMAT-1-'].update(True)
+                window['-FORMAT-2-'].update(False)
+            elif '-FORMAT-2-' == event:
+                format = 1
+                window['-FORMAT-1-'].update(False)
+                window['-FORMAT-2-'].update(True)
+
+        if values['-PDF_LIST-'] != '' and values['-INPUT_EXCEL-'] != '':
+            window['-FORMAT-1-'].update(disabled = False)
+            window['-FORMAT-2-'].update(disabled = False)
+                
     window.close()
 
 
@@ -120,6 +134,16 @@ def win_main():
     sg.theme('BlueMono')
 
     menu_def = [['&Help', ['&About']]]
+    ##menu_def = [['&Help', ['&About']]]
+
+    Format_layout = [
+        [sg.Input(disabled=True,
+                  size=(LWIDTH, 2),
+                  enable_events=True,
+                  key='-INPUT_PDF-'),
+         sg.FolderBrowse(visible=False, key='-FOLDER_PDF-')],
+         [sg.Checkbox(text='General', default=True, disabled = True, enable_events=True, key = '-FORMAT-1-'), 
+         sg.Checkbox(text='MTC', disabled = True, enable_events=True, key = '-FORMAT-2-')]]
 
     convertor = [
         [sg.Button(
@@ -127,11 +151,7 @@ def win_main():
             image_subsample=INCON_SIZE,
             key='-PDF-',
             tooltip='Select PDF files folder to convert data'),
-         sg.Input(disabled=True,
-                  size=(LWIDTH, 2),
-                  enable_events=True,
-                  key='-INPUT_PDF-'),
-         sg.FolderBrowse(visible=False, key='-FOLDER_PDF-')],
+         sg.Col(Format_layout)],
         [sg.Listbox(values=[],
                     enable_events=True,
                     size=(1, 20),
@@ -175,6 +195,7 @@ def win_main():
     ]
 
     layout = [
+        [sg.Menu(menu_def)],
         [sg.Frame('Convertor', convertor),
          sg.Frame('Page Viewer', pageViewer)]
     ]

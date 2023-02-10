@@ -1,3 +1,4 @@
+import re
 import threading
 import win32file
 
@@ -25,22 +26,35 @@ class Pdf2Xl(threading.Thread):
         _type_: _description_
     """
     __slots__ = ('pdf_files', 'xl_file', 'datas',
-                 'exit_code', 'progress')
+                 'exit_code', 'progress', 'format')
 
     title_xl = {'Date': 0, 'Customer': 1, 'PO#1': 2, 'Type': 3, 'PO#2': 4,
                 'Description': 5, 'Qty': 6, 'Unit Price': 7, 'Total': 8, 'Customer req. ETD': 9}
+    
     mapping_pdf2xl = {'Item': 3, 'Description': 5,
                       'Qty': 6, None: None, 'Rate': 7, 'Amount': 8}
     table_width = 10
 
     title_pdf = ['Item', 'Description', 'Qty', None, 'Rate', 'Amount']
 
-    def __init__(self, pdf_files: str, xl_file: str) -> None:
-        self.pdf_files = pdf_files
-        self.xl_file = xl_file
+    # def __init__(self, pdf_files: str, xl_file: str) -> None:
+    #     self.pdf_files = pdf_files
+    #     self.xl_file = xl_file
+    #     self.datas = list()
+    #     self.exit_code = None
+    #     self.format = 1
+    #     self.progress = 0   # Max value: 100%
+    #     # 创建多线程 设置以保护模式启动，即主线程运行结束，子线程也停止运行
+    #     super().__init__()
+    #     self.setDaemon(True)
+
+    def __init__(self, pdf_files: str, xl_file: str, format: int) -> None:
         self.datas = list()
         self.exit_code = None
+        self.format = format
         self.progress = 0   # Max value: 100%
+        self.pdf_files = pdf_files
+        self.xl_file = xl_file
         # 创建多线程 设置以保护模式启动，即主线程运行结束，子线程也停止运行
         super().__init__()
         self.setDaemon(True)
@@ -76,30 +90,123 @@ class Pdf2Xl(threading.Thread):
         len_pdfs = len(self.pdf_files)
         for pdf in self.pdf_files:
             with pdfplumber.open(pdf) as f:
-                # 提取PDF中的一页
+                    # 提取PDF中的一页
                 for page in f.pages:
-                    Date = ''
-                    PONo = ''
-                    # 在页面内,逐表格筛选数据
-                    for table in page.extract_tables():
-                        # 先找到标题栏标识Date和'P.O. No.'
-                        if (Date == '' and ['Date', 'P.O. No.'] in table):
-                            # 若已经找到标题栏标识Date,记录Date和P.O.No.
-                            Date = table[1][0]
-                            PONo = table[1][1]
-                        # 已经找到标题栏标识Item, 格式化数据为xl排版
-                        if (self.title_pdf in table):
-                            self.format_data(table)
 
-                    # 补填Date和P.O No.
-                    len_datas = len(self.datas)
-                    for i in range(total_last, len_datas):
-                        self.datas[i][self.title_xl['Date']] = Date
-                        self.datas[i][self.title_xl['PO#1']] = PONo
-                        self.datas[i][self.title_xl['PO#2']] = PONo
-                    total_last = len_datas
+                    if 0 == self.format:
+                        Date = ''
+                        PONo = ''
+                        # 在页面内,逐表格筛选数据
+                        for table in page.extract_tables():
+                            # 先找到标题栏标识Date和'P.O. No.'
+                            if (Date == '' and ['Date', 'P.O. No.'] in table):
+                                # 若已经找到标题栏标识Date,记录Date和P.O.No.
+                                Date = table[1][0]
+                                PONo = table[1][1]
+                            # 已经找到标题栏标识Item, 格式化数据为xl排版
+                            if (self.title_pdf in table):
+                                self.format_data(table)
 
-            self.progress += 1/len_pdfs*50
+                        # 补填Date和P.O No.
+                        len_datas = len(self.datas)
+                        for i in range(total_last, len_datas):
+                            self.datas[i][self.title_xl['Date']] = Date
+                            self.datas[i][self.title_xl['PO#1']] = PONo
+                            self.datas[i][self.title_xl['PO#2']] = PONo
+                        total_last = len_datas
+                
+                    elif 1 == self.format:
+                        # 检查本页是否含有表单信息
+                        # 获取Date,Project Number和Purchase/PENDING Number
+                        texts = page.extract_text()
+
+                        Date = ''
+                        pat = re.compile('Order Date: \d+/\d+/\d{4}')
+                        retList = re.findall(pat, texts)
+                        if(len(retList) > 0):
+                            Date = retList[0].replace('Order Date: ', '')
+
+                        proNum = ''
+                        pat = re.compile('VENDOR Vendor Quote #: .+ ')
+                        retList = re.findall(pat, texts)
+                        if(len(retList) > 0):
+                            proNum = retList[0].replace('VENDOR Vendor Quote #: ', '')
+
+                        POSharp = ''
+                        pat1 = re.compile('Purchase Order No.: .+')
+                        retList1 = re.findall(pat1, texts)
+                        pat2 = re.compile('PENDING PO No.: .+')
+                        retList2 = re.findall(pat2, texts)
+                        if(len(retList1) > 0):
+                            POSharp = retList1[0].replace('Purchase Order No.: ', '')
+                        elif(len(retList2) > 0):
+                            POSharp = retList2[0].replace('PENDING PO No.: ', '')
+
+                        if(Date and POSharp and proNum):
+                            ret = re.search('Line # .+ Price', texts)
+                            newBegin = ret.span()[1] + 1
+                            texts = texts[newBegin:]
+                            lineSharp = 1
+                            while( not re.findall('^Midwest Composite', texts)):
+                                curLine = re.findall('^.+\n', texts)[0]
+                                texts = re.sub('^.+\n', '', texts)
+                                # 检查是否为新一行
+                                retList = re.findall('\d+.+\s\$\d+.+\s\$\d+.+\s\$\d+.+', curLine)
+                                # 进入上一行信息录入,再进行本行行信息搜索
+                                if(len(retList) > 0):
+                                    lineSharp = int(re.findall('^\d+\s', curLine)[0])
+                                    curLine = re.sub('^\d+\s', '', curLine)
+                                    # 录入上一行信息
+                                    if(lineSharp > 1 and lineSharp == len(self.datas) + 2):
+                                        self.datas.append([])
+                                        for n in range(self.table_width):
+                                            self.datas[-1].append('')
+                                        self.datas[-1][0] = Date
+                                        self.datas[-1][1] = 'MTC'
+                                        self.datas[-1][2] = POSharp
+                                        self.datas[-1][3] = ''
+                                        self.datas[-1][4] = proNum
+                                        self.datas[-1][5] = description
+                                        self.datas[-1][6] = qty
+                                        self.datas[-1][7] = unitP
+                                    #逆序搜索各种信息
+                                    tempLine = curLine[::-1][1:-1]
+                                    tempLine = re.sub('^\d{2}.\d+,*\d*\$\s', '', tempLine) # 删去 Price
+                                    tempLine = re.sub('^\d{2}.\d+,*\d*\$\s', '', tempLine) # 删去 Discount
+
+                                    unitP = re.findall('^\d+.\d+,*\d*\$\s', tempLine)[0][::-1]#获得Unit Price
+                                    tempLine = re.sub('^\d+.\d+,*\d*\$\s', '', tempLine)
+
+                                    qty = re.findall('^\d+,*\d*\s', tempLine)[0][::-1]#获得Qty
+                                    tempLine = re.sub('^\d+,*\d*\s', '', tempLine)
+
+                                    # 获取'/'前面的Description
+                                    # 需要考虑'/'在下一行的情况
+                                    retList = re.findall('^.+\/', curLine)
+                                    if(retList):
+                                        description = retList[0][:-2]
+                                    else:
+                                        description = tempLine[::-1]
+                                # 否则依然位上一行信息
+                                # 若本行含有'/',则需要补充至上一行Description
+                                else:
+                                    if(re.findall('.*\s\/', curLine)):
+                                        description += re.findall('.*\s\/', curLine)[0][:-2]
+
+                            # 录入最后一行信息
+                            if(lineSharp > 0):
+                                self.datas.append([])
+                                for n in range(self.table_width):
+                                    self.datas[-1].append('')
+                                self.datas[-1][0] = Date
+                                self.datas[-1][1] = 'MTC'
+                                self.datas[-1][2] = POSharp
+                                self.datas[-1][3] = ''
+                                self.datas[-1][4] = proNum
+                                self.datas[-1][5] = description
+                                self.datas[-1][6] = qty
+                                self.datas[-1][7] = unitP   
+                    self.progress += 1/len_pdfs*50
 
     def wt_to_xl(self) -> None:
         # 打开指定路径的Excel文件
