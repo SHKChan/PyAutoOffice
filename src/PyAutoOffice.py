@@ -10,9 +10,7 @@ import PySimpleGUI as sg
 from Pdf2Xl import Pdf2Xl
 from PdfViewer import PdfViewer
 
-LWIDTH = 32
-BUTTON_MAPPING = {'-PDF-': '-FOLDER_PDF-', '-EXCEL-': '-FILE_EXCEL-'}
-INCON_SIZE = 7
+
 VERSION = ['V1.0.3', 'V1.0.2', 'V1.0.1', 'V.1.0.0']
 UPDATE_NOTE = [
     ['Added: Support PDF format for Midwest Composite Technologies, LLC dba Fathom\n'],
@@ -55,7 +53,10 @@ def main():
             sg.popup('Update Notes', f'{notes}', )
 
         if event in ('-PDF-', '-EXCEL-'):
-            window[BUTTON_MAPPING[event]].Click()
+            if('-PDF-' == event):
+                window['-FOLDER_PDF-'].Click()
+            elif('-EXCEL-' == event):
+                window['-FILE_EXCEL-'].Click()
 
         if event == '-CONVERT-':
             if values['-PDF_LIST-'] != '' and values['-INPUT_EXCEL-'] != '':
@@ -66,7 +67,6 @@ def main():
                 convertor = Pdf2Xl(pdf_files, values['-INPUT_EXCEL-'], format)
                 convertor.start()
                 while True:
-                    # convertor.convert()
                     if convertor.exit_code == 0:
                         sg.popup(
                             'Info', 'Convert PDF data into Excel successfully!')
@@ -74,7 +74,7 @@ def main():
                     elif convertor.exit_code is not None:
                         sg.popup('Error', 'Converting error!')
                         break
-                    # 更新进度条
+                    # Update progress bar
                     window['-PROGRESS_BAR-'].update(
                         current_count=convertor.progress)
             else:
@@ -131,24 +131,26 @@ def main():
 
 
 def win_main():
+    lWidth = 32
+    iconSize = 7
+
     sg.theme('BlueMono')
 
     menu_def = [['&Help', ['&About']]]
-    ##menu_def = [['&Help', ['&About']]]
 
     Format_layout = [
         [sg.Input(disabled=True,
-                  size=(LWIDTH, 2),
+                  size=(lWidth, 2),
                   enable_events=True,
                   key='-INPUT_PDF-'),
          sg.FolderBrowse(visible=False, key='-FOLDER_PDF-')],
-         [sg.Checkbox(text='General', default=True, disabled = True, enable_events=True, key = '-FORMAT-1-'), 
+         [sg.Checkbox(text='ICO Mold', default=True, disabled = True, enable_events=True, key = '-FORMAT-1-'), 
          sg.Checkbox(text='MTC', disabled = True, enable_events=True, key = '-FORMAT-2-')]]
 
     convertor = [
         [sg.Button(
             image_filename='.//icon//pdf.png',
-            image_subsample=INCON_SIZE,
+            image_subsample=iconSize,
             key='-PDF-',
             tooltip='Select PDF files folder to convert data'),
          sg.Col(Format_layout)],
@@ -161,7 +163,7 @@ def win_main():
                     key='-PDF_LIST-')],
         [sg.HSeparator()],
         [sg.Button(
-            image_filename='.//icon//sheets.png',                        image_subsample=INCON_SIZE,
+            image_filename='.//icon//sheets.png',                        image_subsample=iconSize,
             key='-EXCEL-',
             tooltip='Select Excel file to save data'),
          sg.Input(disabled=True,
@@ -176,12 +178,12 @@ def win_main():
         [sg.HSeparator()],
         [sg.ProgressBar(max_value=100,
                         orientation='h',
-                        size=(LWIDTH, 30),
+                        size=(lWidth, 30),
                         expand_x=True,
                         border_width=3,
                         key='-PROGRESS_BAR-')],
         [sg.Button(image_filename='.//icon//convert.png',
-                   image_subsample=INCON_SIZE,
+                   image_subsample=iconSize,
                    key='-CONVERT-',
                    tooltip='Save and exit the selected Excel file before converting')]
     ]
@@ -200,7 +202,7 @@ def win_main():
          sg.Frame('Page Viewer', pageViewer)]
     ]
 
-    return sg.Window(f'PyAutoOffice {VERSION[0]}', layout, element_justification='center')
+    return sg.Window(f'PyAutoOffice {VERSION[0]}', layout, element_justification='center', location=(0, 0))
 
 
 def mat2bytes(img_mat: np.ndarray) -> None:
