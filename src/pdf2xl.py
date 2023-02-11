@@ -267,7 +267,7 @@ class Pdf2Xl(threading.Thread):
                 ws.cell(row+first_row2wt, col+1).value = self.datas[row][col]
             self.progress += 1/len_datas*50
 
-         # 保存文件
+        # 保存文件
         wb.save(self.xl_file)
         wb.close()
 
@@ -275,18 +275,13 @@ class Pdf2Xl(threading.Thread):
         # xl文件是否可写
         try:
             vHandle = win32file.CreateFile(file,    # 文件名
-
                                            type,  # 访问对象的类型。应用程序可以获得读访问、写访问、读写访问或设备查询访问
-
                                            0,   # 指定如何共享对象的位标志集,如果dwShareMode为0，则不能共享该对象。
-
                                            None,    # 安全属性，或者没有，为None
-
                                            win32file.OPEN_EXISTING,  # 指定对存在的文件执行哪个操作，以及在文件不存在时执行哪个操作
-
                                            win32file.FILE_ATTRIBUTE_NORMAL,  # 文件的属性
-
                                            None)  # 指定对模板文件具有GENERIC_READ访问权限的句柄
+            
             return int(vHandle) == win32file.INVALID_HANDLE_VALUE
         except:
             return True

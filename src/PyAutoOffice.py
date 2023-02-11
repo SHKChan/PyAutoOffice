@@ -122,10 +122,6 @@ def main():
                 format = 1
                 window['-FORMAT-1-'].update(False)
                 window['-FORMAT-2-'].update(True)
-
-        if values['-PDF_LIST-'] != '' and values['-INPUT_EXCEL-'] != '':
-            window['-FORMAT-1-'].update(disabled = False)
-            window['-FORMAT-2-'].update(disabled = False)
                 
     window.close()
 
@@ -144,8 +140,8 @@ def win_main():
                   enable_events=True,
                   key='-INPUT_PDF-'),
          sg.FolderBrowse(visible=False, key='-FOLDER_PDF-')],
-         [sg.Checkbox(text='ICO Mold', default=True, disabled = True, enable_events=True, key = '-FORMAT-1-'), 
-         sg.Checkbox(text='MTC', disabled = True, enable_events=True, key = '-FORMAT-2-')]]
+         [sg.Checkbox(text='ICO Mold', default=True, enable_events=True, key = '-FORMAT-1-'), 
+         sg.Checkbox(text='MTC', enable_events=True, key = '-FORMAT-2-')]]
 
     convertor = [
         [sg.Button(
