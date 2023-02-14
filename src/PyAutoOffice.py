@@ -3,16 +3,20 @@
 # author:SHK C.
 
 import os
+import sys
 
 import cv2
 import numpy as np
 import PySimpleGUI as sg
+
+import OnlineUpdate
 from Pdf2Xl import Pdf2Xl
 from PdfViewer import PdfViewer
 
 
-VERSION = ['V1.0.3', 'V1.0.2', 'V1.0.1', 'V.1.0.0']
+VERSION = ['V1.1.0', 'V1.0.3', 'V1.0.2', 'V1.0.1', 'V.1.0.0']
 UPDATE_NOTE = [
+    ['Added: Online update\n'],
     ['Added: Support PDF format for Midwest Composite Technologies, LLC dba Fathom\n'],
     ['Others: Data structure optimize',
      'Fixed: Raise error when excel file is occupied',
@@ -43,14 +47,22 @@ def main():
         if event in (None, sg.WIN_CLOSED, '-CLOSE-'):
             break
 
-        if event == 'About':
-            notes = []
-            for i in range(len(VERSION)):
-                notes.append(VERSION[i])
-                for j in range(len(UPDATE_NOTE[i])):
-                    notes.append(UPDATE_NOTE[i][j])
-            notes = '\n'.join(notes)
-            sg.popup('Update Notes', f'{notes}', )
+        if event in ('About', 'Update'):
+            if 'About' == event:
+                notes = []
+                for i in range(len(VERSION)):
+                    notes.append(VERSION[i])
+                    for j in range(len(UPDATE_NOTE[i])):
+                        notes.append(UPDATE_NOTE[i][j])
+                notes = '\n'.join(notes)
+                sg.popup('Update Notes', f'{notes}', )
+            if 'Update' == event:
+                # Call the check_for_updates function periodically
+                filename = OnlineUpdate.check_for_updates(VERSION[-2])
+                if(filename):
+                    OnlineUpdate.install_update(filename)
+                    sys.exit()
+
 
         if event in ('-PDF-', '-EXCEL-'):
             if('-PDF-' == event):
@@ -69,10 +81,10 @@ def main():
                 while True:
                     if convertor.exit_code == 0:
                         sg.popup(
-                            'Info', 'Convert PDF data into Excel successfully!')
+                            'Info', 'Convert success!')
                         break
                     elif convertor.exit_code is not None:
-                        sg.popup('Error', 'Converting error!')
+                        sg.popup('Error', 'Convert fail!')
                         break
                     # Update progress bar
                     window['-PROGRESS_BAR-'].update(
@@ -132,7 +144,7 @@ def win_main():
 
     sg.theme('BlueMono')
 
-    menu_def = [['&Help', ['&About']]]
+    menu_def = [['&Help', ['&About', '&Update']]]
 
     Format_layout = [
         [sg.Input(disabled=True,

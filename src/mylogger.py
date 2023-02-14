@@ -4,8 +4,9 @@ import traceback
 
 
 class MyLogger(object):
-    path = './log.log'
-    logging.basicConfig(filename=path)
+    path = './Error.log'
+    logging.basicConfig(filename=path, level=logging.ERROR,
+                        format='%(asctime)s %(levelname)s %(name)s %(message)s')
 
     @classmethod
     def wt(cls) -> None:
